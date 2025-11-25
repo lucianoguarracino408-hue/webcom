@@ -1,0 +1,10 @@
+️Instalar dependencias
+npm init -y
+npm install express node-fetch cors
+
+2️⃣ Ejecutar el servidor
+node server.js
+
+3️⃣ Abrir tu index.html en el navegador
+
+y escribir una URL en el cuadrado azul.
