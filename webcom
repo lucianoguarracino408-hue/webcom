@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cubo 3D con Carga Web Real</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at center, #1e1e1e, #0c0c0c);
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    .scene {
+      width: 300px;
+      height: 300px;
+      perspective: 1000px;
+    }
+
+    .cube {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotate 12s infinite ease-in-out;
+      cursor: grab;
+      filter: drop-shadow(0 20px 35px rgba(0,0,0,0.6));
+    }
+
+    .face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #005fff;
+      border: 3px solid rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.1rem;
+      overflow: hidden;
+    }
+
+    .front input {
+      width: 90%;
+      padding: 8px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    pre {
+      width: 100%;
+      height: 100%;
+      padding: 10px;
+      margin: 0;
+      background: #111;
+      color: #0f0;
+      font-size: 0.8rem;
+      overflow-y: auto;
+    }
+
+    .front  { transform: rotateY(0deg) translateZ(150px); background:#007bff; }
+    .back   { transform: rotateY(180deg) translateZ(150px); }
+    .right  { transform: rotateY(90deg) translateZ(150px); background:#222; }
+    .left   { transform: rotateY(-90deg) translateZ(150px); background:#111; }
+    .top    { transform: rotateX(90deg) translateZ(150px); }
+    .bottom { transform: rotateX(-90deg) translateZ(150px); }
+
+    @keyframes rotate {
+      0%   { transform: rotateX(0deg) rotateY(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scene">
+    <div class="cube" id="cube">
+
+      <!-- Cara frontal (URL) -->
+      <div class="face front">
+        <input id="urlInput" type="text" placeholder="https://ejemplo.com">
+      </div>
+
+      <!-- Cara derecha (web cargada) -->
+      <div class="face right">
+        <iframe id="webFrame"></iframe>
+      </div>
+
+      <!-- Cara izquierda (código HTML real) -->
+      <div class="face left">
+        <pre id="htmlCode">Introduce una URL →</pre>
+      </div>
+
+      <div class="face back">BACK</div>
+      <div class="face top">TOP</div>
+      <div class="face bottom">BOTTOM</div>
+
+    </div>
+  </div>
+
+  <script>
+    const input = document.getElementById("urlInput");
+    const htmlBox = document.getElementById("htmlCode");
+    const iframe = document.getElementById("webFrame");
+
+    input.addEventListener("change", () => {
+      let url = input.value.trim();
+
+      if (!url.startsWith("http")) {
+        url = "https://" + url;
+      }
+
+      // Mostrar la web real
+      iframe.src = url;
+
+      // Obtener HTML mediante proxy
+      fetch("http://localhost:3000/proxy?url=" + encodeURIComponent(url))
+        .then(res => res.text())
+        .then(code => {
+          htmlBox.textContent = code;
+        })
+        .catch(err => {
+          htmlBox.textContent = "Error al obtener código:\n" + err;
+        });
+    });
+  </script>
+
+</body>
+</html>
